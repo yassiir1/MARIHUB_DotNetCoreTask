@@ -7,105 +7,90 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using MIRAHUB.Models;
-
+using MIRAHUB.Services;
+//using MIRAHUB.Cache;
 namespace MIRAHUB.Controllers
 {
+    [Authorize(Roles = "ADMIN")]
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin")]
-    public class AccountsController  : ControllerBase
+    //[Authorize(Roles = "ADMIN")]
+    public class AccountsController : ControllerBase
     {
         private readonly MIRAHUBDb _context;
-        public AccountsController(MIRAHUBDb context)
+        private readonly IAccountsServices AccountServices;
+
+        public AccountsController(MIRAHUBDb context, IAccountsServices accountServices)
         {
             _context = context;
-  
+            AccountServices = accountServices;
         }
 
-        // GET: api/Accounts
         [HttpGet]
-        [Route("ListUsers")]
-        public async Task<ActionResult<IEnumerable<Accounts>>> GetAccounts()
+        [Route("ListAccounts")]
+        public IActionResult GetAccounts()
         {
-            return await _context.Accounts.ToListAsync();
+            var data = AccountServices.GetAccounts();
+            return Ok(new { data = data, Status = 200, Message = "Success" });
         }
 
-        // GET: api/Accounts/5
         [HttpGet]
-        [Route("ListUserByID")]
-        public async Task<ActionResult<Accounts>> GetAccounts(int id)
+        [Route("ListAccountByID")]
+        public IActionResult GetAccountBy(int id)
         {
-            var accounts = await _context.Accounts.FindAsync(id);
-
-            if (accounts == null)
-            {
-                return NotFound();
-            }
-
-            return accounts;
+            var account = AccountServices.GetAccountBy(id);
+            return Ok(new { data = account, Message = "Success", Status = 200 });
         }
 
-        // PUT: api/Accounts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        [Route("UpdateUser")]
-        public async Task<IActionResult> PutAccounts(int id, Accounts accounts)
+        [Route("UpdateAccount")]
+        public IActionResult PutAccounts(int id, Accounts accounts)
         {
             if (id != accounts.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(accounts).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AccountsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            var data = AccountServices.UpdateAccount(accounts);
+            if (data == "Success")
+                return Ok(new { data = data, Status = 200 });
+            else
+                return BadRequest(new {Message = data, Status = 400 });
         }
 
-        // POST: api/Accounts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+  
         [HttpPost]
-        [Route("AddUser")]
-        public async Task<ActionResult<Accounts>> PostAccounts(Accounts accounts)
+        [Route("AddAccount")]
+        public IActionResult PostAccounts(Accounts accounts)
         {
-            _context.Accounts.Add(accounts);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetAccounts", new { id = accounts.Id }, accounts);
+            var data = AccountServices.AddAccount(accounts);
+            if (data == "Success")
+                return Ok(new { Message = data, Status = 200 });
+            else
+                return Ok(new { Message = data, Status = 400 });
         }
 
-        // DELETE: api/Accounts/5
         [HttpDelete]
-        [Route("DeleteUser")]
-        public async Task<IActionResult> DeleteAccounts(int id)
+        [Route("DeleteAccount")]
+        public IActionResult DeleteAccounts(int id)
         {
-            var accounts = await _context.Accounts.FindAsync(id);
-            if (accounts == null)
+            var Message = "";
+            var Status = 0;
+            var data = AccountServices.DeleteAccount(id);
+            if (data == "Success")
             {
-                return NotFound();
+                Message = "Account Deleted Successfully";
+                Status = 200;
             }
 
-            _context.Accounts.Remove(accounts);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            else
+            {
+                Message = "Account Didn't Deleted";
+                Status = 400;
+            }
+            return Ok(new { Message  = Message, Status = Status});
         }
 
         private bool AccountsExists(int id)

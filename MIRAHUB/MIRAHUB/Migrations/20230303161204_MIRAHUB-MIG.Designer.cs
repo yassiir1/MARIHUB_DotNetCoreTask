@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MIRAHUB.Migrations
 {
     [DbContext(typeof(MIRAHUBDb))]
-    [Migration("20230301184209_MIRAHUB")]
-    partial class MIRAHUB
+    [Migration("20230303161204_MIRAHUB-MIG")]
+    partial class MIRAHUBMIG
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,13 +44,6 @@ namespace MIRAHUB.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("isActive")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -128,6 +121,70 @@ namespace MIRAHUB.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("MIRAHUB.Models.OrderDetails", b =>
+                {
+                    b.Property<int>("RecordID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecordID"));
+
+                    b.Property<Guid>("OrderGUID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("OrdersOrderID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("RecordID");
+
+                    b.HasIndex("OrdersOrderID");
+
+                    b.ToTable("OrderDetails");
+                });
+
+            modelBuilder.Entity("MIRAHUB.Models.Orders", b =>
+                {
+                    b.Property<int>("OrderID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
+
+                    b.Property<DateTime>("OrderDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OrderGUID")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("account")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("user")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("OrderID");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -263,6 +320,13 @@ namespace MIRAHUB.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("MIRAHUB.Models.OrderDetails", b =>
+                {
+                    b.HasOne("MIRAHUB.Models.Orders", null)
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrdersOrderID");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -312,6 +376,11 @@ namespace MIRAHUB.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MIRAHUB.Models.Orders", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

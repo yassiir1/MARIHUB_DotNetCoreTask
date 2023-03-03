@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace MIRAHUB.Migrations
 {
     /// <inheritdoc />
-    public partial class MIRAHUB : Migration
+    public partial class MIRAHUBMIG : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -19,9 +19,7 @@ namespace MIRAHUB.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EmailAccount = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    isActive = table.Column<bool>(type: "bit", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,6 +65,23 @@ namespace MIRAHUB.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    OrderID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    account = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    user = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrderGUID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.OrderID);
                 });
 
             migrationBuilder.CreateTable(
@@ -175,6 +190,29 @@ namespace MIRAHUB.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "OrderDetails",
+                columns: table => new
+                {
+                    RecordID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderGUID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    TotalPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OrdersOrderID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetails", x => x.RecordID);
+                    table.ForeignKey(
+                        name: "FK_OrderDetails_Orders_OrdersOrderID",
+                        column: x => x.OrdersOrderID,
+                        principalTable: "Orders",
+                        principalColumn: "OrderID");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -213,6 +251,11 @@ namespace MIRAHUB.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetails_OrdersOrderID",
+                table: "OrderDetails",
+                column: "OrdersOrderID");
         }
 
         /// <inheritdoc />
@@ -237,10 +280,16 @@ namespace MIRAHUB.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "OrderDetails");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
         }
     }
 }
