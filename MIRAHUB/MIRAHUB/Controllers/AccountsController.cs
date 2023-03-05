@@ -47,7 +47,7 @@ namespace MIRAHUB.Controllers
 
         [HttpPut]
         [Route("UpdateAccount")]
-        public IActionResult PutAccounts(int id, Accounts accounts)
+        public IActionResult PutAccounts( int id, Accounts accounts)
         {
             if (id != accounts.Id)
             {
@@ -63,9 +63,15 @@ namespace MIRAHUB.Controllers
   
         [HttpPost]
         [Route("AddAccount")]
-        public IActionResult PostAccounts(Accounts accounts)
+        public IActionResult PostAccounts([FromHeader] string phoneNumber,string emailAccount, string password /*Accounts accounts*/)
         {
-            var data = AccountServices.AddAccount(accounts);
+            Accounts Acc = new Accounts()
+            {
+                Password = password,
+                PhoneNumber = phoneNumber,
+                EmailAccount = emailAccount,
+            };
+            var data = AccountServices.AddAccount(Acc);
             if (data == "Success")
                 return Ok(new { Message = data, Status = 200 });
             else

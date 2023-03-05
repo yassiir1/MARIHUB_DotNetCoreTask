@@ -33,7 +33,7 @@ namespace MIRAHUB.Controllers
         {
             var existUser = await _user.FindByEmailAsync(UserModel.Email);
             var Message = "";
-            if (existUser == null)
+            if (existUser != null)
             {
                 Message = "The Email Is Already Exist!";
                 return BadRequest(new { StatusCode = 500, Message = Message });
@@ -83,8 +83,8 @@ namespace MIRAHUB.Controllers
                 PhoneNumber = UserModel.PhoneNumber
 
             };
-            var OrderUserRes = await _user.CreateAsync(Orderuser, "Yaser#1234567");
-            await _user.AddToRoleAsync(Orderuser, "ORDERS_USER");
+            var OrderUserRes = await _user.CreateAsync(Orderuser, "Ahmed#1234567");
+            await _user.AddToRoleAsync(Orderuser, "USER");
             return Ok(new { Message = "Order User Created Successfully", Status = 200, data = Orderuser });
         }
         [HttpPost]

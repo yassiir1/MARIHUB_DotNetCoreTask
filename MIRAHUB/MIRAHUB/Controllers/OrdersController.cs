@@ -24,7 +24,8 @@ namespace MIRAHUB.Controllers
         //[AllowAnonymous]
         public IActionResult GetOrders()
         {
-            var data = OrdersServices.GetOrders();
+            var UserEmail = User.Identity.Name;
+            var data = OrdersServices.GetOrders(UserEmail);
             return Ok(new { data = data, Status = 200, Message = "Success" });
         }
 

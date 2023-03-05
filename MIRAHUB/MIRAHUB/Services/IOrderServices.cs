@@ -4,7 +4,7 @@ namespace MIRAHUB.Services
 {
     public interface IOrderServices
     {
-        public List<Orders> GetOrders();
+        public List<Orders> GetOrders(string UserEmail);
         public Orders GetOrderByID(int id);
         public string AddOrder(List<AddOrder> Order, string UserEmail);
         public string UpdateOrder(Orders Order);

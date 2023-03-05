@@ -19,14 +19,17 @@ namespace MIRAHUB.Services
             var Month = DateTime.Now.Month;
             var Remaining = 0;
             var Year = DateTime.Now.Year;
-            var AccountBudget = _context.Orders.Where(u => u.account == UserName && u.OrderDate.Year == Year && u.OrderDate.Month == Month).OrderBy(u=> u.OrderID).Last().Account_RemainingBudget.ToString();
-            if(string.IsNullOrEmpty(AccountBudget))
+            var AccountBudget = "";
+            try
+            {
+                 AccountBudget = _context.Orders.Where(u => u.account == UserName && u.OrderDate.Year == Year && u.OrderDate.Month == Month).OrderBy(u => u.OrderID).Last().Account_RemainingBudget.ToString();
+                Remaining = int.Parse(AccountBudget) - 1;
+
+            }
+            catch (Exception ex)
             {
                 Remaining = BudgetPerMonth - 1;
-            }
-            else
-            {
-                Remaining = int.Parse(AccountBudget) - 1;
+
             }
             var Status = "";
             try
@@ -90,9 +93,9 @@ namespace MIRAHUB.Services
             return data;
         }
 
-        public List<Orders> GetOrders()
+        public List<Orders> GetOrders(string UserEmail)
         {
-            var data = _context.Orders.ToList();
+            var data = _context.Orders.Where(u=> u.account == UserEmail).ToList();
             data.Select(u => u.OrderDetails = _context.OrderDetails.Where(c => c.OrderGUID == u.OrderGUID).ToList()).ToList();
             return data;
         }
