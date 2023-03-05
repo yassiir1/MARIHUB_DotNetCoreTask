@@ -31,13 +31,13 @@ namespace MIRAHUB.Controllers
         [Route("AddUser")]
         public async Task<ActionResult> PostAccounts(AppUser UserModel)
         {
-            //var existUser = await _user.FindByEmailAsync(UserModel.Email);
-            //var Message = "";
-            //if (existUser == null)
-            //{
-            //    Message = "The Email Is Already Exist!";
-            //    return BadRequest(new { StatusCode = 500, Message = Message });
-            //}
+            var existUser = await _user.FindByEmailAsync(UserModel.Email);
+            var Message = "";
+            if (existUser == null)
+            {
+                Message = "The Email Is Already Exist!";
+                return BadRequest(new { StatusCode = 500, Message = Message });
+            }
             ///////////////////////////
             // Create Admin User 
             ///////////////////////////
@@ -53,8 +53,6 @@ namespace MIRAHUB.Controllers
             //var Adminresult = await _user.CreateAsync(Adminuser, "Yasser@123456");
             //await _user.AddToRoleAsync(Adminuser, "Admin");
             //return Ok(new { Message = "Admin User Created Successfully", Status = 200, data = Adminuser });
-
-
 
             ///////////////////////////
             // Create Normal User 
@@ -79,10 +77,10 @@ namespace MIRAHUB.Controllers
 
             var Orderuser = new AppUser
             {
-                Name = "Yasser Mohamed Hammad",
-                Email = "yasseiirMohamed@ORDERS_USER.com",
-                UserName = "yasseiirMohamed@ORDERS_USER.com",
-                PhoneNumber = "01015490078"
+                Name = UserModel.Name,
+                Email = UserModel.Email,
+                UserName = UserModel.UserName,
+                PhoneNumber = UserModel.PhoneNumber
 
             };
             var OrderUserRes = await _user.CreateAsync(Orderuser, "Yaser#1234567");
