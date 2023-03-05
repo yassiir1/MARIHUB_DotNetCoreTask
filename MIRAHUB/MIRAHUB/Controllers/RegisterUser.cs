@@ -52,7 +52,7 @@ namespace MIRAHUB.Controllers
             //};
             //var Adminresult = await _user.CreateAsync(Adminuser, "Yasser@123456");
             //await _user.AddToRoleAsync(Adminuser, "Admin");
-            //return Ok(new { Message = "Admin User Created Successfully", Status = 200, data = Adminuser });
+            //return Ok(new { Message = "Admin User Created Successfully", Status = 200, data = Adminuser })
 
             ///////////////////////////
             // Create Normal User 
