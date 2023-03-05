@@ -6,6 +6,7 @@ namespace MIRAHUB.Models
     {
         [Key]
         public int OrderID { get; set; }
+        public int Account_RemainingBudget { get; set; }
         public DateTime OrderDate { get; set; }
         public string account { get; set; }
         public string user { get; set; }

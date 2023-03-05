@@ -21,7 +21,7 @@ namespace MIRAHUB.Controllers
         }
         [HttpGet]
         [Route("ListOrders")]
-        [AllowAnonymous]
+        //[AllowAnonymous]
         public IActionResult GetOrders()
         {
             var data = OrdersServices.GetOrders();

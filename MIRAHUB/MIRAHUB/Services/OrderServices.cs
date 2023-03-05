@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using MIRAHUB.Models;
 
 namespace MIRAHUB.Services
@@ -14,6 +15,19 @@ namespace MIRAHUB.Services
 
         public string AddOrder(List<AddOrder> Order, string UserName)
         {
+            var BudgetPerMonth = 10;
+            var Month = DateTime.Now.Month;
+            var Remaining = 0;
+            var Year = DateTime.Now.Year;
+            var AccountBudget = _context.Orders.Where(u => u.account == UserName && u.OrderDate.Year == Year && u.OrderDate.Month == Month).OrderBy(u=> u.OrderID).Last().Account_RemainingBudget.ToString();
+            if(string.IsNullOrEmpty(AccountBudget))
+            {
+                Remaining = BudgetPerMonth - 1;
+            }
+            else
+            {
+                Remaining = int.Parse(AccountBudget) - 1;
+            }
             var Status = "";
             try
             {
@@ -23,7 +37,8 @@ namespace MIRAHUB.Services
                     OrderDate = DateTime.Now,
                     user = UserName,
                     account = UserName,
-                    TotalPrice = Order.Sum(u => (u.price * u.quantity))
+                    TotalPrice = Order.Sum(u => (u.price * u.quantity)),
+                    Account_RemainingBudget = Remaining
                 };
                 _context.Orders.Add(OrderHeader);
                 _context.SaveChanges();
