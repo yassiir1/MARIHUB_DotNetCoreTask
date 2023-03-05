@@ -69,7 +69,7 @@ namespace MIRAHUB.Controllers
             //};
             //var Userresult = await _user.CreateAsync(user, "Yasser#123456");
             //await _user.AddToRoleAsync(user, "USER");
-            //return Ok(new { Message = "Normal User Created Successfully", Status = 200, data = user })
+            //return Ok(new { Message = "Normal User Created Successfully", Status = 200, data = user });
 
             ///////////////////////////
             // Create See Only Orders User 
